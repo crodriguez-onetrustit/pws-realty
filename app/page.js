@@ -1,17 +1,74 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 
-export default function Home() {
-  const [listings, setListings] = useState([])
+// Sample properties for display
+const sampleProperties = [
+  {
+    id: '1',
+    title: 'Luxury Penthouse',
+    address: '123 Park Avenue, Jersey City, NJ',
+    price: 4500,
+    beds: 3,
+    baths: 2,
+    sqft: 2200,
+    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'
+  },
+  {
+    id: '2',
+    title: 'Modern Downtown Loft',
+    address: '456 Main Street, Newark, NJ',
+    price: 3200,
+    beds: 2,
+    baths: 2,
+    sqft: 1500,
+    image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800'
+  },
+  {
+    id: '3',
+    title: 'Elegant Suburban Home',
+    address: '789 Oak Avenue, Edison, NJ',
+    price: 3800,
+    beds: 4,
+    baths: 3,
+    sqft: 2800,
+    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800'
+  },
+  {
+    id: '4',
+    title: 'Waterfront Condo',
+    address: '321 River Road, Hoboken, NJ',
+    price: 5200,
+    beds: 2,
+    baths: 2,
+    sqft: 1800,
+    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800'
+  },
+  {
+    id: '5',
+    title: 'Historic Brownstone',
+    address: '555 Summit Ave, Jersey City, NJ',
+    price: 4100,
+    beds: 3,
+    baths: 2,
+    sqft: 2100,
+    image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800'
+  },
+  {
+    id: '6',
+    title: 'Garden Apartment',
+    address: '888 Garden Lane, New Brunswick, NJ',
+    price: 2400,
+    beds: 2,
+    baths: 1,
+    sqft: 1100,
+    image: 'https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=800'
+  }
+]
 
-  useEffect(() => {
-    fetch('/mc/listings')
-      .then(r => r.json())
-      .then(data => setListings(data.filter(l => l.available).slice(0, 6)))
-      .catch(() => {})
-  }, [])
+export default function Home() {
+  const [properties] = useState(sampleProperties)
 
   return (
     <>
@@ -75,14 +132,10 @@ export default function Home() {
           </div>
           
           <div className="property-grid">
-            {listings.map(listing => (
+            {properties.map(listing => (
               <div key={listing.id} className="property-card-luxury">
                 <div className="property-image-luxury">
-                  {listing.image ? (
-                    <img src={listing.image} alt={listing.title} />
-                  ) : (
-                    <div className="property-placeholder">🏠</div>
-                  )}
+                  <img src={listing.image} alt={listing.title} />
                   <div className="property-badge-luxury">For Rent</div>
                 </div>
                 <div className="property-content-luxury">
@@ -94,8 +147,8 @@ export default function Home() {
                     <span>📐 {listing.sqft} Sq Ft</span>
                   </div>
                   <div className="property-footer">
-                    <span className="property-price-luxury">${Number(listing.price).toLocaleString()}/mo</span>
-                    <Link href={`/contact?property=${listing.id}`} className="btn-property">Details</Link>
+                    <span className="property-price-luxury">${listing.price.toLocaleString()}/mo</span>
+                    <Link href="/contact" className="btn-property">Details</Link>
                   </div>
                 </div>
               </div>
