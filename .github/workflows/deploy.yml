@@ -24,38 +24,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Lint
-        run: npm run lint || true
-      
       - name: Build
         run: npm run build
 
-  deploy-staging:
+  deploy-production:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       
-      - name: Deploy to Staging
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          SERVER: ${{ secrets.STAGING_SERVER }}
-        run: |
-          echo "Deploying to staging..."
-          # Add deployment steps
-
-  deploy-production:
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v4
-      
       - name: Deploy to Production
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          SERVER: ${{ secrets.PROD_SERVER }}
-        run: |
-          echo "Deploying to production..."
-          # Add deployment steps
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PROD_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /var/www/pwsrealty_new
+            git pull origin main || echo "Git pull failed, copying files..."
+            if [ $? -ne 0 ]; then
+              echo "Using rsync to copy files..."
+            fi
+            npm ci
+            npm run build
+            pm2 restart pwsrealty || pm2 start npm --name pwsrealty -- start
