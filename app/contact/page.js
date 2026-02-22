@@ -1,6 +1,56 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  })
+  const [status, setStatus] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setStatus(null)
+
+    try {
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      if (response.ok) {
+        setStatus({ type: 'success', text: 'Message sent successfully! We\'ll get back to you soon.' })
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: ''
+        })
+      } else {
+        setStatus({ type: 'error', text: 'Failed to send message. Please try again.' })
+      }
+    } catch (error) {
+      setStatus({ type: 'error', text: 'An error occurred. Please try again.' })
+    }
+
+    setLoading(false)
+  }
+
   return (
     <main>
       {/* Header */}
@@ -41,30 +91,75 @@ export default function Contact() {
             {/* Contact Form */}
             <div className="contact-form">
               <h2 style={{ marginBottom: '30px' }}>Send Us a Message</h2>
-              <form>
+              
+              {status && (
+                <div style={{ 
+                  padding: '15px', 
+                  marginBottom: '20px', 
+                  borderRadius: 'var(--radius-md)',
+                  background: status.type === 'success' ? '#d4edda' : '#f8d7da',
+                  color: status.type === 'success' ? '#155724' : '#721c24'
+                }}>
+                  {status.text}
+                </div>
+              )}
+              
+              <form onSubmit={handleSubmit}>
                 <div className="form-row">
                   <div className="form-group">
                     <label>First Name *</label>
-                    <input type="text" placeholder="John" required />
+                    <input 
+                      type="text" 
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      placeholder="John" 
+                      required 
+                    />
                   </div>
                   <div className="form-group">
                     <label>Last Name *</label>
-                    <input type="text" placeholder="Doe" required />
+                    <input 
+                      type="text" 
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      placeholder="Doe" 
+                      required 
+                    />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
                     <label>Email *</label>
-                    <input type="email" placeholder="john@example.com" required />
+                    <input 
+                      type="email" 
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="john@example.com" 
+                      required 
+                    />
                   </div>
                   <div className="form-group">
                     <label>Phone</label>
-                    <input type="tel" placeholder="(555) 123-4567" />
+                    <input 
+                      type="tel" 
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="(555) 123-4567" 
+                    />
                   </div>
                 </div>
                 <div className="form-group">
                   <label>Subject *</label>
-                  <select required>
+                  <select 
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                  >
                     <option value="">Select a subject</option>
                     <option>I'm interested in a property</option>
                     <option>I want to rent my property</option>
@@ -74,10 +169,22 @@ export default function Contact() {
                 </div>
                 <div className="form-group">
                   <label>Message *</label>
-                  <textarea rows="5" placeholder="Tell us about your needs..." required></textarea>
+                  <textarea 
+                    rows="5" 
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Tell us about your needs..." 
+                    required
+                  ></textarea>
                 </div>
-                <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                  Send Message
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  style={{ width: '100%' }}
+                  disabled={loading}
+                >
+                  {loading ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             </div>
@@ -125,14 +232,6 @@ export default function Contact() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Map Section */}
-      <section style={{ height: '400px', background: 'var(--gray-lighter)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ fontSize: '4rem', marginBottom: '10px' }}>🗺️</p>
-          <p style={{ color: 'var(--gray)', fontSize: '1.2rem' }}>Interactive Map Coming Soon</p>
         </div>
       </section>
 
