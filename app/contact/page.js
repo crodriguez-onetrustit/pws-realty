@@ -1,194 +1,168 @@
-'use client'
-
-import { useState } from 'react'
 import Link from 'next/link'
 
-// Metadata must be in a separate file for client components
-// or use the pages router approach
-
 export default function Contact() {
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' })
-  const [status, setStatus] = useState(null)
-  const [loading, setLoading] = useState(false)
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setStatus(null)
-    
-    try {
-      const res = await fetch('/mc/contact-messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
-      const data = await res.json()
-      if (data.success) {
-        setStatus({ type: 'success', text: data.message })
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
-      } else {
-        setStatus({ type: 'error', text: data.error || 'Something went wrong' })
-      }
-    } catch (err) {
-      setStatus({ type: 'error', text: 'Could not connect to server' })
-    }
-    setLoading(false)
-  }
-
   return (
-    <>
+    <main>
+      {/* Header */}
       <header className="header">
-        <div className="header-content">
-          <div className="logo">
-            PWS <span>Realty</span>
+        <div className="container">
+          <div className="header-content">
+            <Link href="/" className="logo">
+              PWS <span>Realty</span>
+            </Link>
+            <nav className="nav">
+              <Link href="/">Home</Link>
+              <Link href="/properties">Properties</Link>
+              <Link href="/about">About</Link>
+              <Link href="/services">Services</Link>
+              <Link href="/blog">Blog</Link>
+              <Link href="/contact" className="active">Contact</Link>
+            </nav>
+            <div className="header-actions">
+              <Link href="/admin" style={{color: 'var(--gray)', fontSize: '0.9rem'}}>Admin</Link>
+              <Link href="/properties" className="btn btn-primary">View Listings</Link>
+            </div>
           </div>
-          <nav className="nav">
-            <Link href="/">Home</Link>
-            <Link href="/listings">Listings</Link>
-            <Link href="/about">About</Link>
-            <Link href="/services">Services</Link>
-            <Link href="/faq">FAQ</Link>
-            <Link href="/apply">Apply</Link>
-            <Link href="/contact">Contact</Link>
-          </nav>
         </div>
       </header>
 
-      <section className="section">
-        <h1 className="section-title">Contact <span>Us</span></h1>
-        
-        <div style={{maxWidth: '600px', margin: '0 auto'}}>
-          <div className="card">
-            <h2 style={{color: 'var(--gold)', marginBottom: '1.5rem'}}>Get In Touch</h2>
-            
-            <p style={{marginBottom: '1rem'}}>
-              <strong>Phone:</strong> <a href="tel:+17869252344" style={{color: 'var(--gold)'}}>786-925-2344</a>
-            </p>
-            <p style={{marginBottom: '1rem'}}>
-              <strong>Email:</strong> <a href="mailto:SMunoz@pwsrealty.com" style={{color: 'var(--gold)'}}>SMunoz@pwsrealty.com</a>
-            </p>
-            <p style={{marginBottom: '1.5rem'}}>
-              <strong>Office:</strong> New Jersey, USA
-            </p>
-            
-            <hr style={{border: 'none', borderTop: '1px solid var(--gray)', margin: '1.5rem 0'}} />
-            
-            <h3 style={{color: 'var(--gold)', marginBottom: '1rem'}}>Send a Message</h3>
-            
-            {status && (
-              <div style={{
-                padding: '1rem',
-                marginBottom: '1rem',
-                borderRadius: '8px',
-                background: status.type === 'success' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(244, 67, 54, 0.2)',
-                color: status.type === 'success' ? '#4caf50' : '#f44336',
-                textAlign: 'center'
-              }}>
-                {status.text}
-              </div>
-            )}
-            
-            <form onSubmit={handleSubmit}>
-              <div style={{marginBottom: '1rem'}}>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Name *</label>
-                <input 
-                  type="text" 
-                  name="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  required
-                  style={{
-                    width: '100%', padding: '0.75rem', 
-                    background: 'var(--dark)', border: '1px solid var(--gray)', 
-                    borderRadius: '8px', color: 'var(--white)'
-                  }} 
-                />
+      {/* Page Header */}
+      <section className="page-header">
+        <div className="container">
+          <h1>Contact Us</h1>
+          <p>Get in touch with our team for all your real estate needs</p>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="contact-section">
+        <div className="container">
+          <div className="contact-grid">
+            {/* Contact Form */}
+            <div className="contact-form">
+              <h2 style={{ marginBottom: '30px' }}>Send Us a Message</h2>
+              <form>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>First Name *</label>
+                    <input type="text" placeholder="John" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Last Name *</label>
+                    <input type="text" placeholder="Doe" required />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Email *</label>
+                    <input type="email" placeholder="john@example.com" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Phone</label>
+                    <input type="tel" placeholder="(555) 123-4567" />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>Subject *</label>
+                  <select required>
+                    <option value="">Select a subject</option>
+                    <option>I'm interested in a property</option>
+                    <option>I want to rent my property</option>
+                    <option>I want to sell my property</option>
+                    <option>General inquiry</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Message *</label>
+                  <textarea rows="5" placeholder="Tell us about your needs..." required></textarea>
+                </div>
+                <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+                  Send Message
+                </button>
+              </form>
+            </div>
+
+            {/* Contact Info */}
+            <div className="contact-info">
+              <h3>Get In Touch</h3>
+              
+              <div className="contact-item">
+                <div className="contact-icon">📍</div>
+                <div className="contact-details">
+                  <h4>Office Address</h4>
+                  <p>New Jersey, USA</p>
+                </div>
               </div>
               
-              <div style={{marginBottom: '1rem'}}>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Email *</label>
-                <input 
-                  type="email" 
-                  name="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  required
-                  style={{
-                    width: '100%', padding: '0.75rem', 
-                    background: 'var(--dark)', border: '1px solid var(--gray)', 
-                    borderRadius: '8px', color: 'var(--white)'
-                  }} 
-                />
+              <div className="contact-item">
+                <div className="contact-icon">📞</div>
+                <div className="contact-details">
+                  <h4>Phone</h4>
+                  <p>(786) 925-2344</p>
+                </div>
+              </div>
+              
+              <div className="contact-item">
+                <div className="contact-icon">✉️</div>
+                <div className="contact-details">
+                  <h4>Email</h4>
+                  <p>SMunoz@pwsrealty.com</p>
+                </div>
+              </div>
+              
+              <div className="contact-item">
+                <div className="contact-icon">🕐</div>
+                <div className="contact-details">
+                  <h4>Office Hours</h4>
+                  <p>Monday - Friday: 9AM - 6PM<br/>Saturday: 10AM - 4PM<br/>Sunday: By Appointment</p>
+                </div>
               </div>
 
-              <div style={{marginBottom: '1rem'}}>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Phone</label>
-                <input 
-                  type="tel" 
-                  name="phone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  style={{
-                    width: '100%', padding: '0.75rem', 
-                    background: 'var(--dark)', border: '1px solid var(--gray)', 
-                    borderRadius: '8px', color: 'var(--white)'
-                  }} 
-                />
+              <div style={{ marginTop: '40px', padding: '25px', background: 'var(--gray-lighter)', borderRadius: 'var(--radius-lg)' }}>
+                <h4 style={{ marginBottom: '15px' }}>Emergency?</h4>
+                <p style={{ color: 'var(--gray)', marginBottom: '15px' }}>For urgent matters outside business hours, please call our emergency line.</p>
+                <p style={{ fontWeight: '700', color: 'var(--primary)' }}>(786) 925-2344</p>
               </div>
-              
-              <div style={{marginBottom: '1rem'}}>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Subject *</label>
-                <select 
-                  name="subject"
-                  value={formData.subject}
-                  onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                  required
-                  style={{
-                    width: '100%', padding: '0.75rem', 
-                    background: 'var(--dark)', border: '1px solid var(--gray)', 
-                    borderRadius: '8px', color: 'var(--white)'
-                  }}
-                >
-                  <option value="">Select a topic...</option>
-                  <option value="rental inquiry">I'm looking to rent</option>
-                  <option value="list property">I have a property to rent</option>
-                  <option value="property management">Property Management</option>
-                  <option value="general">General Question</option>
-                </select>
-              </div>
-              
-              <div style={{marginBottom: '1rem'}}>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Message *</label>
-                <textarea 
-                  name="message"
-                  rows="5"
-                  value={formData.message}
-                  onChange={(e) => setFormData({...formData, message: e.target.value})}
-                  required
-                  style={{
-                    width: '100%', padding: '0.75rem', 
-                    background: 'var(--dark)', border: '1px solid var(--gray)', 
-                    borderRadius: '8px', color: 'var(--white)'
-                  }}
-                ></textarea>
-              </div>
-              
-              <button 
-                type="submit" 
-                className="btn" 
-                disabled={loading}
-                style={{width: '100%', opacity: loading ? 0.7 : 1}}
-              >
-                {loading ? 'Sending...' : 'Send Message'}
-              </button>
-            </form>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Map Section */}
+      <section style={{ height: '400px', background: 'var(--gray-lighter)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: '4rem', marginBottom: '10px' }}>🗺️</p>
+          <p style={{ color: 'var(--gray)', fontSize: '1.2rem' }}>Interactive Map Coming Soon</p>
+        </div>
+      </section>
+
+      {/* Footer */}
       <footer className="footer">
-        <p>© 2026 Properties With Stephanie Realty. All rights reserved.</p>
+        <div className="container">
+          <div className="footer-grid">
+            <div className="footer-col">
+              <h3 className="logo" style={{ color: 'white', marginBottom: '20px' }}>
+                PWS <span>Realty</span>
+              </h3>
+              <p>New Jersey's premier real estate agency.</p>
+            </div>
+            <div className="footer-col">
+              <h4>Quick Links</h4>
+              <Link href="/properties">Properties</Link>
+              <Link href="/about">About Us</Link>
+              <Link href="/contact">Contact</Link>
+            </div>
+            <div className="footer-col">
+              <h4>Contact</h4>
+              <p>📞 (786) 925-2344</p>
+              <p>📧 SMunoz@pwsrealty.com</p>
+            </div>
+          </div>
+          <div className="footer-bottom">
+            <p>© 2026 PWS Realty. All rights reserved.</p>
+          </div>
+        </div>
       </footer>
-    </>
+    </main>
   )
 }

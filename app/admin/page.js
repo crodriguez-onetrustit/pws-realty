@@ -1,233 +1,261 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 
+// Sample data
+const properties = [
+  { id: 1, title: 'Luxury Downtown Penthouse', address: '123 Park Avenue, Jersey City', price: 4500, type: 'Rent', status: 'Active', featured: true },
+  { id: 2, title: 'Modern Waterfront Loft', address: '456 River Road, Hoboken', price: 3800, type: 'Rent', status: 'Active', featured: true },
+  { id: 3, title: 'Elegant Suburban Estate', address: '789 Oak Avenue, Edison', price: 5200, type: 'Rent', status: 'Active', featured: false },
+  { id: 4, title: 'Historic Brownstone', address: '321 Summit Ave, Jersey City', price: 4200, type: 'Rent', status: 'Active', featured: true },
+  { id: 5, title: 'Garden Colonial Home', address: '555 Maple Lane, New Brunswick', price: 3500, type: 'Rent', status: 'Active', featured: false },
+]
+
+const messages = [
+  { id: 1, name: 'John Smith', email: 'john@email.com', subject: 'Inquiry about penthouse', property: 'Luxury Downtown Penthouse', date: '2026-02-22', read: false },
+  { id: 2, name: 'Sarah Johnson', email: 'sarah@email.com', subject: 'Rental application', property: 'Modern Waterfront Loft', date: '2026-02-21', read: true },
+  { id: 3, name: 'Mike Williams', email: 'mike@email.com', subject: 'Questions about pricing', property: null, date: '2026-02-20', read: true },
+]
+
+const stats = {
+  properties: 24,
+  messages: 12,
+  views: 1250,
+  featured: 8
+}
+
 export default function Admin() {
-  const [listings, setListings] = useState([])
-  const [form, setForm] = useState({
-    title: '', address: '', price: '', beds: '', baths: '', sqft: '', type: 'Apartment', image: '', available: true
-  })
-  const [editing, setEditing] = useState(null)
-  const [message, setMessage] = useState(null)
-
-  useEffect(() => {
-    fetch('/mc/listings')
-      .then(r => r.json())
-      .then(setListings)
-      .catch(() => setMessage({ type: 'error', text: 'Could not load listings' }))
-  }, [])
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const method = editing ? 'PUT' : 'POST'
-    const body = editing ? { ...form, id: editing } : form
-    
-    try {
-      const res = await fetch('/mc/listings', {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      })
-      const data = await res.json()
-      if (data.success) {
-        setMessage({ type: 'success', text: editing ? 'Listing updated!' : 'Listing added!' })
-        const refreshed = await fetch('/mc/listings').then(r => r.json())
-        setListings(refreshed)
-        resetForm()
-      }
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to save listing' })
-    }
-  }
-
-  const handleEdit = (listing) => {
-    setForm(listing)
-    setEditing(listing.id)
-    window.scrollTo(0, 0)
-  }
-
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this listing?')) return
-    try {
-      await fetch(`/mc/listings?id=${id}`, { method: 'DELETE' })
-      setListings(listings.filter(l => l.id !== id))
-      setMessage({ type: 'success', text: 'Listing deleted!' })
-    } catch {
-      setMessage({ type: 'error', text: 'Failed to delete' })
-    }
-  }
-
-  const resetForm = () => {
-    setForm({ title: '', address: '', price: '', beds: '', baths: '', sqft: '', type: 'Apartment', image: '', available: true })
-    setEditing(null)
-  }
+  const [activeTab, setActiveTab] = useState('dashboard')
 
   return (
-    <>
-      <header className="header">
-        <div className="header-content">
-          <div className="logo">PWS <span>Realty</span></div>
-          <nav className="nav">
-            <Link href="/">Home</Link>
-            <Link href="/listings">View Site</Link>
-          </nav>
+    <div className="admin-layout">
+      {/* Sidebar */}
+      <aside className="admin-sidebar">
+        <div className="admin-logo">
+          🏠 PWS <span>Admin</span>
         </div>
-      </header>
+        <nav className="admin-nav">
+          <a href="#" className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>
+            📊 Dashboard
+          </a>
+          <a href="#" className={activeTab === 'properties' ? 'active' : ''} onClick={() => setActiveTab('properties')}>
+            🏠 Properties
+          </a>
+          <a href="#" className={activeTab === 'messages' ? 'active' : ''} onClick={() => setActiveTab('messages')}>
+            💬 Messages
+            <span style={{ marginLeft: 'auto', background: 'var(--danger)', color: 'white', padding: '2px 8px', borderRadius: '10px', fontSize: '0.75rem' }}>3</span>
+          </a>
+          <a href="#" className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
+            ⚙️ Settings
+          </a>
+          <Link href="/" style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
+            ← Back to Website
+          </Link>
+        </nav>
+      </aside>
 
-      <section className="section">
-        <h1 className="section-title">Listing <span>Manager</span></h1>
-        
-        {message && (
-          <div style={{
-            padding: '1rem', marginBottom: '1rem', borderRadius: '8px',
-            background: message.type === 'success' ? 'rgba(76,175,80,0.2)' : 'rgba(244,67,54,0.2)',
-            color: message.type === 'success' ? '#4caf50' : '#f44336'
-          }}>
-            {message.text}
+      {/* Main Content */}
+      <div className="admin-content">
+        {/* Header */}
+        <div className="admin-header">
+          <h1 style={{ fontSize: '1.75rem' }}>
+            {activeTab === 'dashboard' && 'Dashboard'}
+            {activeTab === 'properties' && 'Properties'}
+            {activeTab === 'messages' && 'Messages'}
+            {activeTab === 'settings' && 'Settings'}
+          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <span style={{ color: 'var(--gray)' }}>Welcome, Stephanie</span>
+            <div style={{ width: '40px', height: '40px', background: 'var(--secondary)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: 'var(--dark)' }}>S</div>
           </div>
-        )}
-
-        {/* Form */}
-        <div className="card" style={{maxWidth: '600px', margin: '0 auto 2rem'}}>
-          <h2 style={{color: 'var(--gold)', marginBottom: '1rem'}}>
-            {editing ? 'Edit Listing' : 'Add New Listing'}
-          </h2>
-          
-          <form onSubmit={handleSubmit}>
-            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
-              <div style={{gridColumn: '1 / -1'}}>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Title *</label>
-                <input type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required
-                  style={{width: '100%', padding: '0.75rem', background: 'var(--dark)', border: '1px solid var(--gray)', borderRadius: '8px', color: 'var(--white)'}} />
-              </div>
-              
-              <div style={{gridColumn: '1 / -1'}}>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Address *</label>
-                <input type="text" value={form.address} onChange={e => setForm({...form, address: e.target.value})} required
-                  style={{width: '100%', padding: '0.75rem', background: 'var(--dark)', border: '1px solid var(--gray)', borderRadius: '8px', color: 'var(--white)'}} />
-              </div>
-              
-              <div>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Monthly Rent *</label>
-                <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} required
-                  style={{width: '100%', padding: '0.75rem', background: 'var(--dark)', border: '1px solid var(--gray)', borderRadius: '8px', color: 'var(--white)'}} />
-              </div>
-              
-              <div>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Property Type</label>
-                <select value={form.type} onChange={e => setForm({...form, type: e.target.value})}
-                  style={{width: '100%', padding: '0.75rem', background: 'var(--dark)', border: '1px solid var(--gray)', borderRadius: '8px', color: 'var(--white)'}}>
-                  <option value="Apartment">Apartment</option>
-                  <option value="House">House</option>
-                  <option value="Condo">Condo</option>
-                  <option value="Townhouse">Townhouse</option>
-                </select>
-              </div>
-              
-              <div>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Bedrooms</label>
-                <input type="number" value={form.beds} onChange={e => setForm({...form, beds: e.target.value})}
-                  style={{width: '100%', padding: '0.75rem', background: 'var(--dark)', border: '1px solid var(--gray)', borderRadius: '8px', color: 'var(--white)'}} />
-              </div>
-              
-              <div>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Bathrooms</label>
-                <input type="number" step="0.5" value={form.baths} onChange={e => setForm({...form, baths: e.target.value})}
-                  style={{width: '100%', padding: '0.75rem', background: 'var(--dark)', border: '1px solid var(--gray)', borderRadius: '8px', color: 'var(--white)'}} />
-              </div>
-              
-              <div>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Sq Ft</label>
-                <input type="number" value={form.sqft} onChange={e => setForm({...form, sqft: e.target.value})}
-                  style={{width: '100%', padding: '0.75rem', background: 'var(--dark)', border: '1px solid var(--gray)', borderRadius: '8px', color: 'var(--white)'}} />
-              </div>
-              
-              <div>
-                <label style={{display: 'block', marginBottom: '0.5rem', color: 'var(--gray)'}}>Image URL</label>
-                <input type="url" value={form.image} onChange={e => setForm({...form, image: e.target.value})} placeholder="https://..."
-                  style={{width: '100%', padding: '0.75rem', background: 'var(--dark)', border: '1px solid var(--gray)', borderRadius: '8px', color: 'var(--white)'}} />
-              </div>
-              
-              <div style={{gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: '1rem'}}>
-                <input type="checkbox" checked={form.available} onChange={e => setForm({...form, available: e.target.checked})} />
-                <span style={{color: 'var(--white)'}}>Available for rent</span>
-              </div>
-            </div>
-            
-            <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
-              <button type="submit" className="btn" style={{flex: 1}}>
-                {editing ? 'Update Listing' : 'Add Listing'}
-              </button>
-              {editing && (
-                <button type="button" onClick={resetForm} className="btn" style={{background: 'var(--gray)'}}>
-                  Cancel
-                </button>
-              )}
-            </div>
-          </form>
         </div>
 
-        {/* Listings Table */}
-        <div className="card" style={{maxWidth: '900px', margin: '0 auto'}}>
-          <h2 style={{color: 'var(--gold)', marginBottom: '1rem'}}>Current Listings ({listings.length})</h2>
-          
-          {listings.length === 0 ? (
-            <p style={{color: 'var(--gray)', textAlign: 'center'}}>No listings yet. Add your first property above!</p>
-          ) : (
-            <div style={{overflowX: 'auto'}}>
-              <table style={{width: '100%', borderCollapse: 'collapse'}}>
+        {/* Dashboard Tab */}
+        {activeTab === 'dashboard' && (
+          <>
+            {/* Stats */}
+            <div className="admin-stats">
+              <div className="stat-card">
+                <h3>{stats.properties}</h3>
+                <p>Total Properties</p>
+              </div>
+              <div className="stat-card">
+                <h3>{stats.messages}</h3>
+                <p>Total Messages</p>
+              </div>
+              <div className="stat-card">
+                <h3>{stats.views.toLocaleString()}</h3>
+                <p>Total Views</p>
+              </div>
+              <div className="stat-card">
+                <h3>{stats.featured}</h3>
+                <p>Featured Listings</p>
+              </div>
+            </div>
+
+            {/* Recent Messages */}
+            <div className="admin-card">
+              <h3 style={{ marginBottom: '20px' }}>Recent Messages</h3>
+              <table className="data-table">
                 <thead>
-                  <tr style={{borderBottom: '1px solid var(--gray)'}}>
-                    <th style={{textAlign: 'left', padding: '0.75rem', color: 'var(--gold)'}}>Property</th>
-                    <th style={{textAlign: 'left', padding: '0.75rem', color: 'var(--gold)'}}>Price</th>
-                    <th style={{textAlign: 'left', padding: '0.75rem', color: 'var(--gold)'}}>Details</th>
-                    <th style={{textAlign: 'left', padding: '0.75rem', color: 'var(--gold)'}}>Status</th>
-                    <th style={{textAlign: 'right', padding: '0.75rem', color: 'var(--gold)'}}>Actions</th>
+                  <tr>
+                    <th>Name</th>
+                    <th>Subject</th>
+                    <th>Property</th>
+                    <th>Date</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {listings.map(listing => (
-                    <tr key={listing.id} style={{borderBottom: '1px solid rgba(255,255,255,0.1)'}}>
-                      <td style={{padding: '0.75rem'}}>
-                        <div style={{fontWeight: 'bold'}}>{listing.title}</div>
-                        <div style={{fontSize: '0.85rem', color: 'var(--gray)'}}>{listing.address}</div>
-                      </td>
-                      <td style={{padding: '0.75rem', color: 'var(--gold)', fontWeight: 'bold'}}>
-                        ${Number(listing.price).toLocaleString()}/mo
-                      </td>
-                      <td style={{padding: '0.75rem', color: 'var(--gray)', fontSize: '0.9rem'}}>
-                        {listing.beds}bd • {listing.baths}ba • {listing.sqft}sqft
-                      </td>
-                      <td style={{padding: '0.75rem'}}>
-                        <span style={{
-                          padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem',
-                          background: listing.available ? 'rgba(76,175,80,0.2)' : 'rgba(255,255,255,0.1)',
-                          color: listing.available ? '#4caf50' : 'var(--gray)'
+                  {messages.map(msg => (
+                    <tr key={msg.id}>
+                      <td>{msg.name}</td>
+                      <td>{msg.subject}</td>
+                      <td>{msg.property || 'General'}</td>
+                      <td>{msg.date}</td>
+                      <td>
+                        <span style={{ 
+                          padding: '4px 10px', 
+                          borderRadius: '20px', 
+                          fontSize: '0.8rem',
+                          background: msg.read ? 'var(--success)' : 'var(--warning)',
+                          color: 'white'
                         }}>
-                          {listing.available ? 'Available' : 'Rented'}
+                          {msg.read ? 'Read' : 'New'}
                         </span>
-                      </td>
-                      <td style={{padding: '0.75rem', textAlign: 'right'}}>
-                        <button onClick={() => handleEdit(listing)} style={{marginRight: '0.5rem', background: 'var(--gold)', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer'}}>
-                          Edit
-                        </button>
-                        <button onClick={() => handleDelete(listing.id)} style={{background: '#f44336', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', color: 'white'}}>
-                          Delete
-                        </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
-      </section>
+          </>
+        )}
 
-      <footer className="footer">
-        <p>© 2026 Properties With Stephanie Realty. All rights reserved.</p>
-      </footer>
-    </>
+        {/* Properties Tab */}
+        {activeTab === 'properties' && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2>Manage Properties</h2>
+              <button className="btn btn-primary">+ Add Property</button>
+            </div>
+            <div className="admin-card">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Address</th>
+                    <th>Price</th>
+                    <th>Type</th>
+                    <th>Featured</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {properties.map(prop => (
+                    <tr key={prop.id}>
+                      <td>#{prop.id}</td>
+                      <td><strong>{prop.title}</strong></td>
+                      <td>{prop.address}</td>
+                      <td>${prop.price.toLocaleString()}</td>
+                      <td>{prop.type}</td>
+                      <td>
+                        {prop.featured ? '⭐ Yes' : '—'}
+                      </td>
+                      <td>
+                        <button className="btn btn-outline" style={{ padding: '8px 15px', fontSize: '0.85rem' }}>Edit</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
+        {/* Messages Tab */}
+        {activeTab === 'messages' && (
+          <div className="admin-card">
+            <h3 style={{ marginBottom: '20px' }}>All Messages</h3>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Subject</th>
+                  <th>Property</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {messages.map(msg => (
+                  <tr key={msg.id}>
+                    <td><strong>{msg.name}</strong></td>
+                    <td>{msg.email}</td>
+                    <td>{msg.subject}</td>
+                    <td>{msg.property || 'General'}</td>
+                    <td>{msg.date}</td>
+                    <td>
+                      <button className="btn btn-outline" style={{ padding: '8px 15px', fontSize: '0.85rem', marginRight: '5px' }}>View</button>
+                      <button className="btn btn-outline" style={{ padding: '8px 15px', fontSize: '0.85rem', color: 'var(--danger)', borderColor: 'var(--danger)' }}>Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <>
+            <div className="form-card">
+              <h3>Site Settings</h3>
+              <div className="form-group">
+                <label>Site Name</label>
+                <input type="text" defaultValue="PWS Realty" />
+              </div>
+              <div className="form-group">
+                <label>Site Description</label>
+                <textarea rows="3">New Jersey's premier real estate agency helping clients find their perfect homes.</textarea>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Contact Email</label>
+                  <input type="email" defaultValue="SMunoz@pwsrealty.com" />
+                </div>
+                <div className="form-group">
+                  <label>Contact Phone</label>
+                  <input type="tel" defaultValue="(786) 925-2344" />
+                </div>
+              </div>
+              <button className="btn btn-primary">Save Settings</button>
+            </div>
+
+            <div className="form-card">
+              <h3>Change Password</h3>
+              <div className="form-group">
+                <label>Current Password</label>
+                <input type="password" />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>New Password</label>
+                  <input type="password" />
+                </div>
+                <div className="form-group">
+                  <label>Confirm New Password</label>
+                  <input type="password" />
+                </div>
+              </div>
+              <button className="btn btn-primary">Update Password</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   )
 }

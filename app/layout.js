@@ -1,62 +1,27 @@
 import './globals.css'
+import { Metadata } from 'next'
 
 export const metadata = {
-  title: {
-    default: 'Properties With Stephanie Realty | New Jersey\'s Trusted Rental Partner',
-    template: '%s | Properties With Stephanie Realty'
+  title: 'PWS Realty | New Jersey\'s Trusted Real Estate Partner',
+  description: 'Find your dream home with PWS Realty. Premium property management and real estate services in New Jersey. Stephanie Munoz has 15+ years of experience.',
+  keywords: 'real estate, property management, rentals, New Jersey, NJ apartments, landlord, Stephanie Munoz',
+  author: 'Stephanie Munoz',
+  openGraph: {
+    title: 'PWS Realty | New Jersey\'s Trusted Real Estate Partner',
+    description: 'Find your dream home with PWS Realty.',
+    type: 'website',
+    locale: 'en_US',
+    site_name: 'PWS Realty',
   },
-  description: 'Premium property management in New Jersey. Find your perfect rental or let us manage your property. Stephanie Munoz has 15+ years of NJ real estate experience.',
-  keywords: ['real estate', 'property management', 'rentals', 'New Jersey', 'NJ apartments', 'landlord', 'Stephanie Munoz'],
-  authors: [{ name: 'Stephanie Munoz' }],
-  creator: 'Stephanie Munoz',
-  publisher: 'Properties With Stephanie Realty',
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        
-        {/* JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "RealEstateAgent",
-              "name": "Properties With Stephanie Realty",
-              "description": "Premium property management in New Jersey",
-              "url": "https://pwsrealty.com",
-              "telephone": "+1-786-925-2344",
-              "email": "SMunoz@pwsrealty.com",
-              "address": {
-                "@type": "PostalAddress",
-                "addressRegion": "NJ",
-                "addressLocality": "New Jersey",
-                "addressCountry": "US"
-              },
-              "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": "40.7138",
-                "longitude": "-74.0060"
-              },
-              "areaServed": {
-                "@type": "State",
-                "name": "New Jersey"
-              },
-              "priceRange": "$$",
-              "openingHours": "Mo-Fr 09:00-18:00",
-              "owner": {
-                "@type": "Person",
-                "name": "Stephanie Munoz"
-              }
-            })
-          }}
-        />
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body>{children}</body>
     </html>
