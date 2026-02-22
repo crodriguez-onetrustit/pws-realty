@@ -9,7 +9,7 @@ export default function Home() {
   useEffect(() => {
     fetch('/mc/listings')
       .then(r => r.json())
-      .then(data => setListings(data.filter(l => l.available).slice(0, 3)))
+      .then(data => setListings(data.filter(l => l.available).slice(0, 6)))
       .catch(() => {})
   }, [])
 
@@ -18,106 +18,184 @@ export default function Home() {
       {/* Header */}
       <header className="header">
         <div className="header-content">
-          <div className="logo">
-            PWS <span>Realty</span>
-          </div>
+          <Link href="/" className="logo">PWS <span>Realty</span></Link>
           <nav className="nav">
             <Link href="/">Home</Link>
-            <Link href="/listings">Listings</Link>
+            <Link href="/listings">Properties</Link>
             <Link href="/about">About</Link>
             <Link href="/services">Services</Link>
-            <Link href="/faq">FAQ</Link>
             <Link href="/contact">Contact</Link>
           </nav>
+          <Link href="/listings" className="btn-header">View Listings</Link>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="hero">
-        <div>
-          <h1>New Jersey's Trusted<br/><span>Real Estate Partner</span></h1>
-          <p>Properties With Stephanie Realty - Your trusted partner for rentals and property management in New Jersey.</p>
-          <Link href="/listings" className="btn">View Available Rentals</Link>
+      <section className="hero-luxury">
+        <div className="hero-bg"></div>
+        <div className="hero-content">
+          <div className="hero-badge">Discover Luxury Living Today • Discover Luxury Living Today •</div>
+          <h1>Experience a Smarter Search</h1>
+          <p className="hero-subtitle">Where Your Preferences Meet Expertise</p>
+          <div className="hero-cta">
+            <Link href="/listings" className="btn-luxury">Explore Properties</Link>
+            <Link href="/contact" className="btn-luxury-outline">Contact Us</Link>
+          </div>
         </div>
       </section>
 
-      {/* Featured Listings */}
-      {listings.length > 0 && (
-        <section className="section">
-          <h2 className="section-title">Featured <span>Properties</span></h2>
-          <p style={{textAlign: 'center', color: 'var(--gray)', marginBottom: '2rem'}}>
-            Hand-picked rentals available now
-          </p>
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', maxWidth: '1200px', margin: '0 auto'}}>
+      {/* Stats */}
+      <section className="stats-section">
+        <div className="stats-grid">
+          <div className="stat-item">
+            <span className="stat-number">984</span>
+            <span className="stat-label">Properties Leased</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">99%</span>
+            <span className="stat-label">Client Satisfaction</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">50+</span>
+            <span className="stat-label">Expert Agents</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-number">$98M</span>
+            <span className="stat-label">Transaction Volume</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Properties */}
+      <section className="section-luxury">
+        <div className="container">
+          <div className="section-header">
+            <h2>Our Premium Properties</h2>
+            <p>Discover Smart Investments in New Jersey</p>
+          </div>
+          
+          <div className="property-grid">
             {listings.map(listing => (
-              <div key={listing.id} className="card" style={{padding: 0, overflow: 'hidden'}}>
-                <div style={{
-                  height: '200px',
-                  backgroundImage: listing.image ? `url(${listing.image})` : 'linear-gradient(135deg, var(--gold) 0%, #8b7018 100%)',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {!listing.image && <span style={{fontSize: '3rem'}}>🏠</span>}
+              <div key={listing.id} className="property-card-luxury">
+                <div className="property-image-luxury">
+                  {listing.image ? (
+                    <img src={listing.image} alt={listing.title} />
+                  ) : (
+                    <div className="property-placeholder">🏠</div>
+                  )}
+                  <div className="property-badge-luxury">For Rent</div>
                 </div>
-                <div style={{padding: '1.5rem'}}>
-                  <h3 style={{fontSize: '1.2rem', marginBottom: '0.5rem'}}>{listing.title}</h3>
-                  <p style={{color: 'var(--gray)', marginBottom: '1rem', fontSize: '0.9rem'}}>{listing.address}</p>
-                  <div style={{display: 'flex', gap: '1rem', marginBottom: '1rem', color: 'var(--gray)', fontSize: '0.9rem'}}>
-                    <span>🛏 {listing.beds} bd</span>
-                    <span>🚿 {listing.baths} ba</span>
-                    <span>📐 {listing.sqft} sqft</span>
+                <div className="property-content-luxury">
+                  <h3>{listing.title}</h3>
+                  <p className="property-address">{listing.address}</p>
+                  <div className="property-features">
+                    <span>🛏 {listing.beds} Bedrooms</span>
+                    <span>🚿 {listing.baths} Bathrooms</span>
+                    <span>📐 {listing.sqft} Sq Ft</span>
                   </div>
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <span style={{color: 'var(--gold)', fontSize: '1.5rem', fontWeight: 'bold'}}>
-                      ${Number(listing.price).toLocaleString()}/mo
-                    </span>
-                    <Link href="/listings" className="btn" style={{padding: '0.5rem 1rem', fontSize: '0.9rem'}}>
-                      View
-                    </Link>
+                  <div className="property-footer">
+                    <span className="property-price-luxury">${Number(listing.price).toLocaleString()}/mo</span>
+                    <Link href={`/contact?property=${listing.id}`} className="btn-property">Details</Link>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-          <div style={{textAlign: 'center', marginTop: '2rem'}}>
-            <Link href="/listings" className="btn" style={{display: 'inline-block'}}>
-              View All Listings
-            </Link>
+          
+          <div className="section-cta">
+            <Link href="/listings" className="btn-luxury">View All Properties</Link>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {/* Services Preview */}
-      <section className="section">
-        <h2 className="section-title">Our <span>Services</span></h2>
-        <div className="grid-3">
-          <div className="card">
-            <h3>For Renters</h3>
-            <p>Find your perfect rental property with our comprehensive search and application process.</p>
+      {/* About Preview */}
+      <section className="about-preview">
+        <div className="container">
+          <div className="about-grid">
+            <div className="about-content">
+              <h2>We're Precision, Passion, Purpose</h2>
+              <p>In a market saturated with noise, we choose the clarity. Where others see transactions, we see transformations.</p>
+              <p>Our commitment extends beyond closing deals — we're architects of lifestyles and dreams.</p>
+              <Link href="/about" className="btn-luxury-outline">Learn More</Link>
+            </div>
+            <div className="about-image">
+              <div className="about-image-placeholder">
+                <span>Stephanie Munoz</span>
+                <p>Principal Broker</p>
+              </div>
+            </div>
           </div>
-          <div className="card">
-            <h3>For Landlords</h3>
-            <p>Full-service property management to maximize your investment returns.</p>
+        </div>
+      </section>
+
+      {/* Services */}
+      <section className="section-luxury services-section">
+        <div className="container">
+          <div className="section-header">
+            <h2>Our Premium Approach</h2>
+            <p>A Comprehensive Methodology for Discerning Clients</p>
           </div>
-          <div className="card">
-            <h3>Market Analysis</h3>
-            <p>Free comprehensive market analysis for property owners and investors.</p>
+          
+          <div className="services-grid">
+            <div className="service-card">
+              <span className="service-number">01</span>
+              <h3>Exclusive Portfolio</h3>
+              <p>Access to off-market properties and exclusive listings not available elsewhere.</p>
+            </div>
+            <div className="service-card">
+              <span className="service-number">02</span>
+              <h3>Trusted Expertise</h3>
+              <p>Decades of experience in luxury markets across New Jersey.</p>
+            </div>
+            <div className="service-card">
+              <span className="service-number">03</span>
+              <h3>Personalized Service</h3>
+              <p>Tailored strategies for every client's unique vision and needs.</p>
+            </div>
+            <div className="service-card">
+              <span className="service-number">04</span>
+              <h3>Market Intelligence</h3>
+              <p>Data-driven insights and strategic guidance for smart investments.</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="section" style={{textAlign: 'center'}}>
-        <h2 className="section-title">Ready to Get <span>Started?</span></h2>
-        <p style={{color: 'var(--gray)', marginBottom: '2rem'}}>Contact Stephanie today for personalized service.</p>
-        <Link href="/contact" className="btn">Contact Us</Link>
+      <section className="cta-section">
+        <div className="container">
+          <h2>Are You Ready to Find Your Dream Home?</h2>
+          <p>Let's discuss your real estate goals today.</p>
+          <Link href="/contact" className="btn-luxury">Get In Touch</Link>
+        </div>
       </section>
 
-      <footer className="footer">
-        <p>© 2026 Properties With Stephanie Realty. All rights reserved.</p>
+      {/* Footer */}
+      <footer className="footer-luxury">
+        <div className="container">
+          <div className="footer-grid">
+            <div className="footer-col">
+              <h4>PWS Realty</h4>
+              <p>New Jersey's premier property management and real estate company.</p>
+            </div>
+            <div className="footer-col">
+              <h4>Quick Links</h4>
+              <Link href="/listings">Properties</Link>
+              <Link href="/about">About Us</Link>
+              <Link href="/services">Services</Link>
+              <Link href="/contact">Contact</Link>
+            </div>
+            <div className="footer-col">
+              <h4>Contact</h4>
+              <p>786-925-2344</p>
+              <p>SMunoz@pwsrealty.com</p>
+              <p>New Jersey, USA</p>
+            </div>
+          </div>
+          <div className="footer-bottom">
+            <p>© 2026 Properties With Stephanie Realty. All rights reserved.</p>
+          </div>
+        </div>
       </footer>
     </>
   )
